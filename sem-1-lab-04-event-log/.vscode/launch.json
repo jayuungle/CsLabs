@@ -1,11 +1,12 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Debug Project",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/YOUR_PROJECT_NAME.csproj"
+            "projectPath": "${workspaceFolder}/sem-1-lab-04-event-log.csproj"
         }
     ]
 }

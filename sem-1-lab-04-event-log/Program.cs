@@ -13,10 +13,10 @@ public class Program
 {
     public static void Main()
     {
-        string[] txt = File.ReadAllLines("event_server.log");
-        LogEntry[] massiv = ParseLog(txt);
+        string[] lines = File.ReadAllLines("event_server.log");
+        LogEntry[] logEntries = ParseLog(lines);
         
-        string status = GetServerStatus(massiv);
+        string status = GetServerStatus(logEntries);
         Console.WriteLine(status);
     }
     public static LogEntry[] ParseLog(string[] lines)
@@ -30,14 +30,14 @@ public class Program
 
             entry.Timestamp = DateTime.Parse(s.Substring(0, 23));
 
-            int op1 = s.IndexOf('[');
-            int cl1 = s.IndexOf(']', op1);
-            int op2 = s.IndexOf('[', cl1);
-            int cl2 = s.IndexOf(']', op2);
+            int openBracket1 = s.IndexOf('[');
+            int closeBracket1 = s.IndexOf(']', openBracket1);
+            int openBracket2 = s.IndexOf('[', closeBracket1);
+            int closeBracket2 = s.IndexOf(']', openBracket2);
 
-            entry.Level = s.Substring(op1 + 1, cl1 - op1 - 1);
-            entry.Category = s.Substring(op2 + 1, cl2 - op2 - 1);
-            entry.Message = s.Substring(cl2 + 2);
+            entry.Level = s.Substring(openBracket1 + 1, closeBracket1 - openBracket1 - 1);
+            entry.Category = s.Substring(openBracket2 + 1, closeBracket2 - openBracket2 - 1);
+            entry.Message = s.Substring(closeBracket2 + 2);
 
             entries[i] = entry;
         }
@@ -135,7 +135,7 @@ public class Program
 
     public static string GetServerStatus(LogEntry[] entries)
     {
-        bool estOshibka = false;
+        bool hasError = false;
 
         for (int i = 0; i < entries.Length; i++)
         {
@@ -146,11 +146,11 @@ public class Program
 
             if (entries[i].Level == "Error")
             {
-                estOshibka = true;
+                hasError = true;
             }
         }
 
-        if (estOshibka == true)
+        if (hasError == true)
         {
             return "Есть ошибки: требуется проверка";
         }
@@ -164,8 +164,8 @@ public class Program
 
         for (int i = 0; i < entries.Length; i++)
         {
-            string d = entries[i].Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            outLines[i] = d + " [" + entries[i].Level + "][" + entries[i].Category + "] " + entries[i].Message;
+            string dateString = entries[i].Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            outLines[i] = dateString + " [" + entries[i].Level + "][" + entries[i].Category + "] " + entries[i].Message;
         }
 
         File.WriteAllLines(path, outLines);
